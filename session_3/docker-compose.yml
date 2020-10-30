@@ -2,9 +2,9 @@ version: '3.8'
 
 services:
   db:
-    image: 'postgres:13'
-    environment:
-      POSTGRES_PASSWORD: password0
+    image: postgres:13
+    env_file:
+      - '.env.db'
     networks:
       - backend 
     ports:
@@ -14,7 +14,7 @@ services:
 
 
   redis:
-    image: 'redis:3.2-alpine'
+    image: redis:3.2-alpine
     networks:
       - backend 
     ports:
@@ -22,14 +22,12 @@ services:
     volumes:
       - 'redis:/data'
 
-
-
   api:
-    build: "./rails_api_base"
+    image: rootstrap/rails-base
     depends_on:
       - 'db'
     env_file:
-      - '.env'
+      - '.env.api'
     networks:
       - frontend
       - backend 
@@ -40,12 +38,11 @@ services:
 
 
   web:
-    build: "./react-base"
+    build: "../session_2/react-base"
     env_file:
-      - '.env-react'
+      - '.env.web'
     networks:
       - frontend
-      - backend 
     ports:
       - '8080:8080'
     volumes:
