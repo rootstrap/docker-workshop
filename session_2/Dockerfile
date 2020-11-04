@@ -1,7 +1,7 @@
 FROM node:12.18.2
 
-ARG API_URL
-ARG PORT
+ARG API_URL=http://localhost:3000/api/v1
+ARG PORT=8080
 
 COPY . . 
 
