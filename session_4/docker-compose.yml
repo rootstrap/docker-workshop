@@ -1,0 +1,68 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:13
+    env_file:
+      - '.env.db'
+    networks:
+      - backend 
+    ports:
+      - '5432:5432'
+    volumes:
+      - 'db:/data'
+    deploy:
+      replicas: 3
+
+  redis:
+    image: redis:3.2-alpine
+    networks:
+      - backend 
+    ports:
+      - '6379:6379'
+    volumes:
+      - 'redis:/data'
+
+  api:
+    image: rootstrap/rails-base
+    depends_on:
+      - 'db'
+    env_file:
+      - '.env.api'
+    networks:
+      - frontend
+      - backend 
+    ports:
+      - '3000-3008:3000'
+    volumes:
+      - 'rails:/app'
+    deploy:
+      replicas: 2
+
+
+  web:
+    build: "../session_2/react-base"
+    image: rootstrap/react-base
+    env_file:
+      - '.env.web'
+    networks:
+      - frontend
+    ports:
+      - '8080-8088:8080'
+    deploy:
+      replicas: 2
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 120s
+
+volumes:
+  db: {}
+  redis: {}
+  rails: {}
+
+networks:
+  frontend:
+  backend: 
+
