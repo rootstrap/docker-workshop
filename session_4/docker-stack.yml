@@ -11,10 +11,13 @@ services:
       - '5432:5432'
     volumes:
       - 'db:/data'
-
+    deploy:
+      replicas: 1
 
   redis:
     image: redis:3.2-alpine
+    environment:
+      - REDIS_URL=redis://localhost
     networks:
       - backend 
     ports:
@@ -35,20 +38,26 @@ services:
       - '3000-3008:3000'
     volumes:
       - 'rails:/app'
+    deploy:
+      replicas: 2
 
 
   web:
     build: "../session_2/react-base"
+    image: rootstrap/react-base
     env_file:
       - '.env.web'
     networks:
       - frontend
     ports:
       - '8080-8088:8080'
-    volumes:
-      - './react-base:/app'
-
-
+    deploy:
+      replicas: 2
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 120s
 
 volumes:
   db: {}
