@@ -12,5 +12,5 @@ docker exec $(docker ps -f name=api -n 1 -q) rails db:create db:migrate
 # scale
 docker service scale api=2
 # change base image
-docker service update --image
+docker service update --image postgres:13-alpine db
 # checkout docker service update options
