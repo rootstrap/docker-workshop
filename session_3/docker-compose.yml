@@ -32,7 +32,7 @@ services:
       - frontend
       - backend 
     ports:
-      - '3000:3000'
+      - '3000-3009:3000'
     volumes:
       - 'rails:/app'
 
@@ -44,7 +44,7 @@ services:
     networks:
       - frontend
     ports:
-      - '8080:8080'
+      - '8080-8089:8080'
     volumes:
       - './react-base:/app'
 
