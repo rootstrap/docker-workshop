@@ -29,6 +29,7 @@ services:
     image: rootstrap/rails-base
     depends_on:
       - 'db'
+      - 'redis'
     env_file:
       - '.env.api'
     networks:
@@ -39,12 +40,14 @@ services:
     volumes:
       - 'rails:/app'
     deploy:
-      replicas: 2
+      replicas: 3
 
 
   web:
     build: "../session_2/react-base"
     image: rootstrap/react-base
+    depends_on:
+      - 'api'
     env_file:
       - '.env.web'
     networks:
