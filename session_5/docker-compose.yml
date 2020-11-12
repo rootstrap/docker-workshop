@@ -1,0 +1,61 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:13
+    env_file:
+      - '.env.db'
+    networks:
+      - backend 
+    ports:
+      - '5432:5432'
+    volumes:
+      - 'db:/data'
+
+
+  redis:
+    image: redis:3.2-alpine
+    networks:
+      - backend 
+    ports:
+      - '6379:6379'
+    volumes:
+      - 'redis:/data'
+
+  api:
+    image: rootstrap/rails-base:alpine
+    build: rails_api_base
+    depends_on:
+      - 'db'
+    env_file:
+      - '.env.api'
+    networks:
+      - frontend
+      - backend 
+    ports:
+      - '3000:3000'
+
+
+  web:
+    image: rootstrap/react-base:alpine
+    build: 
+      context: react-base
+      dockerfile: alpine.Dockerfile
+    env_file:
+      - '.env.web'
+    networks:
+      - frontend
+    ports:
+      - '8080:8080'
+
+
+
+volumes:
+  db: {}
+  redis: {}
+  rails: {}
+
+networks:
+  frontend:
+  backend: 
+
