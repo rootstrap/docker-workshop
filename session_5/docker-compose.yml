@@ -24,7 +24,9 @@ services:
 
   api:
     image: rootstrap/rails-base:alpine
-    build: rails_api_base
+    build: 
+      context: rails_api_base
+      dockerfile: rails.alpine.Dockerfile
     depends_on:
       - 'db'
     env_file:
@@ -40,7 +42,7 @@ services:
     image: rootstrap/react-base:alpine
     build: 
       context: react-base
-      dockerfile: alpine.Dockerfile
+      dockerfile: react.alpine.Dockerfile
     env_file:
       - '.env.web'
     networks:
