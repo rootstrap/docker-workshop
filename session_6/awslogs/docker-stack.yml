@@ -1,0 +1,85 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:13
+    env_file:
+      - '.env.db'
+    networks:
+      - backend 
+    ports:
+      - '5432:5432'
+    volumes:
+      - 'db:/data'
+    deploy:
+      replicas: 1
+
+  redis:
+    image: redis:3.2-alpine
+    environment:
+      - REDIS_URL=redis://localhost
+    networks:
+      - backend 
+    ports:
+      - '6379:6379'
+    volumes:
+      - 'redis:/data'
+
+  api:
+    image: rootstrap/rails-base
+    depends_on:
+      - 'db'
+      - 'redis'
+    env_file:
+      - '.env.api'
+    networks:
+      - frontend
+      - backend 
+    ports:
+      - '3000-3008:3000'
+    volumes:
+      - 'rails:/app'
+    deploy:
+      replicas: 3
+    logging:
+      driver: awslogs
+      options:
+        awslogs-region: us-east-1
+        awslogs-group: workshop-api
+        awslogs-create-group: 'true'
+
+
+  web:
+    image: rootstrap/react-base
+    depends_on:
+      - 'api'
+    env_file:
+      - '.env.web'
+    networks:
+      - frontend
+    ports:
+      - '8080-8088:8080'
+    deploy:
+      replicas: 2
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 120s
+    logging:
+      driver: awslogs
+      options:
+        awslogs-region: us-east-1
+        awslogs-group: workshop-web
+        awslogs-create-group: 'true'
+
+
+volumes:
+  db: {}
+  redis: {}
+  rails: {}
+
+networks:
+  frontend:
+  backend: 
+
