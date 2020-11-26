@@ -6,7 +6,7 @@ services:
     env_file:
       - '.env.db'
     networks:
-      - backend 
+      - backend
     ports:
       - '5432:5432'
     volumes:
@@ -19,7 +19,7 @@ services:
     environment:
       - REDIS_URL=redis://localhost
     networks:
-      - backend 
+      - backend
     ports:
       - '6379:6379'
     volumes:
@@ -34,20 +34,20 @@ services:
       - '.env.api'
     networks:
       - frontend
-      - backend 
+      - backend
     ports:
       - '3000-3008:3000'
     volumes:
       - 'rails:/app'
     deploy:
-      replicas: 3
+      replicas: 2
     logging:
       driver: awslogs
       options:
         awslogs-region: us-east-1
         awslogs-group: workshop-api
         awslogs-create-group: 'true'
-
+        tag: '{{.Name}}-{{.ID}}'
 
   web:
     image: rootstrap/react-base
@@ -60,7 +60,7 @@ services:
     ports:
       - '8080-8088:8080'
     deploy:
-      replicas: 2
+      replicas: 1
       restart_policy:
         condition: on-failure
         delay: 5s
@@ -72,7 +72,7 @@ services:
         awslogs-region: us-east-1
         awslogs-group: workshop-web
         awslogs-create-group: 'true'
-
+        tag: '{{.Name}}-{{.ID}}'
 
 volumes:
   db: {}
@@ -81,5 +81,4 @@ volumes:
 
 networks:
   frontend:
-  backend: 
-
+  backend:
